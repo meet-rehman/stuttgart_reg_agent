@@ -1,0 +1,12 @@
+{
+  "filename": "Landesbauordnung.pdf",
+  "path": "raw\\State\\Landesbauordnung.pdf",
+  "size_bytes": 378147,
+  "checksum": "88d354d60d9d646c0c066d60846f7982a9d74c70456768ea078b91658e522867",
+  "processed_at": "2025-09-10 14:51:58",
+  "pages": null,
+  "ocr_used": false,
+  "text_path": "processed\\texts\\Landesbauordnung.txt",
+  "meta_path": null,
+  "error": null
+}

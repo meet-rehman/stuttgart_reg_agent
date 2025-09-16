@@ -1,0 +1,18 @@
+[project]
+name = "stuttgart_reg_agent"
+version = "0.1.0"
+description = "Crew for Stuttgart building regulations"
+requires-python = ">=3.9"
+authors = [
+  { name = "Abdul Rehman", email = "meet.archrehman@gmail.com" }
+]
+
+[tool.crewai]
+default_crew = "stuttgart_reg_agent.crew.StuttgartRegAgent"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

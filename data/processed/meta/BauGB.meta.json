@@ -1,0 +1,12 @@
+{
+  "filename": "BauGB.pdf",
+  "path": "raw\\Federal\\BauGB.pdf",
+  "size_bytes": 682037,
+  "checksum": "760c94951cd28fcbcdfe1580de0207d8141305d6e95a82ddc7b4bb05fa57bc5c",
+  "processed_at": "2025-09-10 14:51:58",
+  "pages": null,
+  "ocr_used": false,
+  "text_path": "processed\\texts\\BauGB.txt",
+  "meta_path": null,
+  "error": null
+}

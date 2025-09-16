@@ -1,0 +1,11 @@
+coordinator_agent:
+  description: "Manages all agents and delegates tasks"
+
+zoning_agent:
+  description: "Analyzes zoning regulations"
+
+building_code_agent:
+  description: "Checks building code compliance"
+
+accessibility_agent:
+  description: "Assesses accessibility compliance"
