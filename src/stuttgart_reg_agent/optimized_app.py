@@ -31,10 +31,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DOTENV_FILE = PROJECT_ROOT / ".env1"
 
 if DOTENV_FILE.exists():
-    load_dotenv(dotenv_path=DOTENV_FILE)
+    load_dotenv(DOTENV_FILE, override=False)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-GROQ_API_URL = os.getenv("GROQ_API_URL", "https://api.groq.com/openai/v1/chat/completions")
+GROQ_API_URL = os.getenv("GROQ_API_URL")
+
+if not GROQ_API_KEY or not GROQ_API_URL:
+    raise RuntimeError("GROQ_API_KEY and GROQ_API_URL must be set in environment or in .env1")
 
 # Directories
 CONFIG_DIR = Path(__file__).parent / "config"
