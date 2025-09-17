@@ -28,16 +28,24 @@ from stuttgart_reg_agent.optimized_rag import OptimizedRAGSystem
 # Load environment
 # -----------------------------------------------------------------------------
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DOTENV_FILE = PROJECT_ROOT / ".env1"
 
-if DOTENV_FILE.exists():
-    load_dotenv(DOTENV_FILE, override=False)
+# Railway detection - only load .env1 locally
+if not os.getenv("RAILWAY_ENVIRONMENT_ID"):
+    DOTENV_FILE = PROJECT_ROOT / ".env1"
+    if DOTENV_FILE.exists():
+        load_dotenv(dotenv_path=DOTENV_FILE)
+        print(f"Loaded environment variables from {DOTENV_FILE}")
 
+# Get environment variables
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-GROQ_API_URL = os.getenv("GROQ_API_URL")
+GROQ_API_URL = os.getenv("GROQ_API_URL", "https://api.groq.com/openai/v1/chat/completions")
 
-if not GROQ_API_KEY or not GROQ_API_URL:
-    raise RuntimeError("GROQ_API_KEY and GROQ_API_URL must be set in environment or in .env1")
+# Validation with helpful error messages
+if not GROQ_API_KEY:
+    available_vars = [key for key in os.environ.keys() if 'GROQ' in key or 'API' in key]
+    raise RuntimeError(f"GROQ_API_KEY not found. Available API-related vars: {available_vars}")
+
+print("Environment variables loaded successfully")
 
 # Directories
 CONFIG_DIR = Path(__file__).parent / "config"
