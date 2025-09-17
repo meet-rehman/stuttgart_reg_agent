@@ -9,18 +9,11 @@ class ResearchCrew():
 
     @agent
     def researcher(self) -> Agent:
-        return Agent(
-            config=self.agents_config['researcher'],
-            verbose=True,
-            tools=[SerperDevTool()]
-        )
+        return Agent(config=self.agents_config['researcher'], verbose=True, tools=[SerperDevTool()])
 
     @agent
     def analyst(self) -> Agent:
-        return Agent(
-            config=self.agents_config['analyst'],
-            verbose=True
-        )
+        return Agent(config=self.agents_config['analyst'], verbose=True)
 
     @task
     def research_task(self) -> Task:

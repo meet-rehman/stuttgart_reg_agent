@@ -1,17 +1,17 @@
-from agents import Agent, WebSearchTool, ModelSettings
+﻿# Clean search_agent.py implementation
+from dataclasses import dataclass
 
-INSTRUCTIONS = (
-    "You are a research assistant. Given a search term, you search the web for that term and "
-    "produce a concise summary of the results. The summary must 2-3 paragraphs and less than 300 "
-    "words. Capture the main points. Write succintly, no need to have complete sentences or good "
-    "grammar. This will be consumed by someone synthesizing a report, so its vital you capture the "
-    "essence and ignore any fluff. Do not include any additional commentary other than the summary itself."
-)
+@dataclass
+class WebSearchTool:
+    name: str = "web_search"
+    description: str = "Search the web"
 
-search_agent = Agent(
-    name="Search agent",
-    instructions=INSTRUCTIONS,
-    tools=[WebSearchTool(search_context_size="low")],
-    model="gpt-4o-mini",
-    model_settings=ModelSettings(tool_choice="required"),
-)
+class Agent:
+    def __init__(self, tools=None):
+        self.tools = tools or []
+
+class ModelSettings:
+    def __init__(self, model="gpt-3.5-turbo"):
+        self.model = model
+
+search_agent = Agent(tools=[WebSearchTool()])

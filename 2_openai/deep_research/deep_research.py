@@ -19,5 +19,9 @@ with gr.Blocks(theme=gr.themes.Default(primary_hue="sky")) as ui:
     run_button.click(fn=run, inputs=query_textbox, outputs=report)
     query_textbox.submit(fn=run, inputs=query_textbox, outputs=report)
 
-ui.launch(inbrowser=True)
+# Enable streaming/queue
+ui.queue()
 
+if __name__ == "__main__":
+    # Local launch
+    ui.launch(inbrowser=True)

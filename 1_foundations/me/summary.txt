@@ -1,2 +1,19 @@
-My name is Ed Donner. I'm an entrepreneur, software engineer and data scientist. I'm originally from London, England, but I moved to NYC in 2000.
-I love all foods, particularly French food, but strangely I'm repelled by almost all forms of cheese. I'm not allergic, I just hate the taste! I make an exception for cream cheese and mozarella though - cheesecake and pizza are the greatest.
+I’m an interdisciplinary professional with a background in architecture and business development, now focused on data-driven marketing, AI/ML and automation using data, digital transformation, and digital innovation subjects.
+
+Over the past two years, I’ve worked as a Business Consultant and Marketing Team Lead for a U.S.-based architecture firm, where I:
+
+Led email marketing automation and CRM integration
+Managed LinkedIn campaigns using Sales Navigator
+Created strategic sales content and outreach materials
+Helped scale client acquisition by 30% annually
+
+Currently, I’m pursuing my Master’s in Sustainable Mobilities in Germany, with a focus on AI, machine learning, and their application in business generation and automation. I’m particularly interested in how technology, data, and creativity intersect to drive smarter campaigns and better customer journeys.
+
+My skill set includes:
+CRM tools & email marketing (Snov.io, HubSpot, ManyChat)
+Content creation & automation
+Campaign tracking & reporting
+LinkedIn Ads & B2B sales strategies
+Tools: Google Workspace, PowerPoint, Excel, Photoshop, Python, KNIME, OpenAI SDK.
+
+I’m actively seeking internship/werkstudent opportunities and roles in Business development and marketing, data driven marketing, AI/ML and automation, and digital transformation, where I can bring structure, creativity, and data-driven thinking to global business challenges.
