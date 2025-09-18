@@ -691,7 +691,7 @@ FRONTEND_HTML = """
     </div>
 
     <script>
-        const API_BASE = 'http://127.0.0.1:8000';
+        const API_BASE = window.location.origin;
         
         // Check API status on load
         async function checkApiStatus() {
