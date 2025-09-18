@@ -1,5 +1,4 @@
 FROM python:3.11-slim
-
 WORKDIR /app
 
 # Install only essential system dependencies
@@ -29,4 +28,5 @@ RUN find /usr/local/lib/python3.11/site-packages -name "*.pyc" -delete && \
 
 EXPOSE 8000
 
-CMD ["python", "run_optimized.py"]
+# FIX: Use the root directory structure - no module prefix needed
+CMD ["uvicorn", "optimized_app:app", "--host", "0.0.0.0", "--port", "8000"]

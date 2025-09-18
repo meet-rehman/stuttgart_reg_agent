@@ -1,0 +1,434 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stuttgart Building Registration Agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .status {
+            padding: 20px;
+            margin: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .status.healthy {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .chat-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .chat-input input {
+            flex: 1;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .btn.secondary:hover {
+            background: #5a6268;
+        }
+
+        .response {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e1e8ed;
+            white-space: pre-wrap;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        .response.loading {
+            background: #f8f9fa;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border: 1px solid #b8daff;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #004085;
+        }
+
+        .info-box strong {
+            color: #002752;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 0;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-input {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Stuttgart Building Registration Agent</h1>
+            <p>Your AI Assistant for Building Registration and Planning in Stuttgart</p>
+        </div>
+
+        <div id="status" class="status">Checking system status...</div>
+
+        <div class="main-content">
+            <!-- Building Information Form -->
+            <div class="section">
+                <h2>Building Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="location">Location in Stuttgart</label>
+                        <select id="location">
+                            <option value="">Select district...</option>
+                            <option value="Stuttgart-Mitte">Stuttgart-Mitte</option>
+                            <option value="Bad Cannstatt">Bad Cannstatt</option>
+                            <option value="Birkach">Birkach</option>
+                            <option value="Botnang">Botnang</option>
+                            <option value="Degerloch">Degerloch</option>
+                            <option value="Feuerbach">Feuerbach</option>
+                            <option value="Hedelfingen">Hedelfingen</option>
+                            <option value="Möhringen">Möhringen</option>
+                            <option value="Mühlhausen">Mühlhausen</option>
+                            <option value="Münster">Münster</option>
+                            <option value="Obertürkheim">Obertürkheim</option>
+                            <option value="Plieningen">Plieningen</option>
+                            <option value="Sillenbuch">Sillenbuch</option>
+                            <option value="Stammheim">Stammheim</option>
+                            <option value="Untertürkheim">Untertürkheim</option>
+                            <option value="Vaihingen">Vaihingen</option>
+                            <option value="Wangen">Wangen</option>
+                            <option value="Weilimdorf">Weilimdorf</option>
+                            <option value="Zuffenhausen">Zuffenhausen</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="buildingType">Building Type</label>
+                        <select id="buildingType">
+                            <option value="">Select type...</option>
+                            <option value="residential-single">Single Family House</option>
+                            <option value="residential-multi">Multi-Family House</option>
+                            <option value="residential-apartment">Apartment Building</option>
+                            <option value="commercial-office">Office Building</option>
+                            <option value="commercial-retail">Retail Building</option>
+                            <option value="commercial-warehouse">Warehouse</option>
+                            <option value="industrial">Industrial Building</option>
+                            <option value="mixed-use">Mixed Use</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="storeys">Number of Storeys</label>
+                        <input type="number" id="storeys" min="1" max="50" placeholder="e.g., 3">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="height">Building Height (meters)</label>
+                        <input type="number" id="height" min="1" max="200" step="0.1" placeholder="e.g., 12.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="area">Total Floor Area (m²)</label>
+                        <input type="number" id="area" min="1" step="0.1" placeholder="e.g., 150.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="purpose">Building Purpose</label>
+                        <input type="text" id="purpose" placeholder="e.g., Family residence, Office space">
+                    </div>
+                </div>
+
+                <button class="btn" onclick="generateQuery()">Generate Building-Specific Query</button>
+            </div>
+
+            <!-- Chat Section -->
+            <div class="section">
+                <h2>Ask Questions</h2>
+                <div class="info-box">
+                    <strong>Tip:</strong> You can ask about building regulations, required documents, permits, planning procedures, or use the form above to get building-specific guidance.
+                </div>
+                
+                <div class="chat-container">
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask about building registration, permits, regulations..." />
+                        <button class="btn" onclick="sendChat()">Send</button>
+                        <button class="btn secondary" onclick="clearChat()">Clear</button>
+                    </div>
+                    <div id="chatResponse" class="response" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        // Check system status
+        async function checkStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                const statusDiv = document.getElementById('status');
+                
+                if (data.status === 'healthy') {
+                    statusDiv.className = 'status healthy';
+                    statusDiv.innerHTML = `
+                        <strong>System Status: ${data.status.toUpperCase()}</strong><br>
+                        Environment: ${data.environment} | 
+                        API Ready: ${data.api_ready ? 'Yes' : 'No'} | 
+                        RAG Ready: ${data.rag_ready ? 'Yes' : 'No'}
+                    `;
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.innerHTML = `<strong>System Status: ${data.status.toUpperCase()}</strong><br>Some components may not be ready.`;
+                }
+            } catch (error) {
+                document.getElementById('status').innerHTML = '<strong>Error:</strong> ' + error.message;
+                document.getElementById('status').className = 'status error';
+            }
+        }
+
+        // Generate building-specific query
+        function generateQuery() {
+            const location = document.getElementById('location').value;
+            const buildingType = document.getElementById('buildingType').value;
+            const storeys = document.getElementById('storeys').value;
+            const height = document.getElementById('height').value;
+            const area = document.getElementById('area').value;
+            const purpose = document.getElementById('purpose').value;
+
+            let query = "I'm planning to build ";
+            
+            if (buildingType) {
+                const typeMap = {
+                    'residential-single': 'a single family house',
+                    'residential-multi': 'a multi-family house',
+                    'residential-apartment': 'an apartment building',
+                    'commercial-office': 'an office building',
+                    'commercial-retail': 'a retail building',
+                    'commercial-warehouse': 'a warehouse',
+                    'industrial': 'an industrial building',
+                    'mixed-use': 'a mixed-use building'
+                };
+                query += typeMap[buildingType] || buildingType;
+            } else {
+                query += "a building";
+            }
+
+            if (location) query += ` in ${location}`;
+            if (storeys) query += ` with ${storeys} storeys`;
+            if (height) query += `, ${height}m high`;
+            if (area) query += `, total area ${area}m²`;
+            if (purpose) query += ` for ${purpose}`;
+
+            query += ". What permits and documents do I need, and what are the specific regulations I should be aware of?";
+
+            document.getElementById('chatInput').value = query;
+            sendChat();
+        }
+
+        // Send chat message
+        async function sendChat() {
+            const input = document.getElementById('chatInput');
+            const responseDiv = document.getElementById('chatResponse');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            responseDiv.style.display = 'block';
+            responseDiv.className = 'response loading';
+            responseDiv.textContent = 'Processing your question...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                responseDiv.className = 'response';
+                responseDiv.textContent = data.message;
+                
+                // Clear input after successful response
+                input.value = '';
+                
+            } catch (error) {
+                responseDiv.className = 'response';
+                responseDiv.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        // Clear chat
+        function clearChat() {
+            document.getElementById('chatInput').value = '';
+            document.getElementById('chatResponse').style.display = 'none';
+        }
+
+        // Enter key support
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendChat();
+            }
+        });
+
+        // Initialize
+        checkStatus();
+    </script>
+</body>
+</html>
