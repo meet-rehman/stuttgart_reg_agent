@@ -87,7 +87,6 @@ rag_system: Optional[PrecomputedRAGSystem] = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan manager"""
     global groq_client, rag_system
     
     try:
@@ -95,30 +94,26 @@ async def lifespan(app: FastAPI):
         
         # Initialize GroqClient
         if GROQ_API_KEY:
-            groq_client = GroqClient(
-                api_key=GROQ_API_KEY,
-                api_url=GROQ_API_URL
-            )
+            groq_client = GroqClient(api_key=GROQ_API_KEY, api_url=GROQ_API_URL)
             print("Groq client initialized")
         else:
             print("WARNING: Groq client not initialized - missing API key")
         
-        # Initialize RAG system
+        # Initialize RAG system with more error handling
+        print("Initializing RAG system...")
         rag_system = PrecomputedRAGSystem()
         await rag_system.initialize()
-        print("RAG system initialized")
+        print("RAG system ready!")  # This message is missing from your logs
         
         print("App started successfully!")
         
     except Exception as e:
-        print(f"Error during startup: {e}")
+        print(f"STARTUP ERROR: {e}")
         import traceback
         traceback.print_exc()
-        raise
+        # Don't raise - let app start anyway for debugging
     
     yield
-    
-    # Cleanup
     print("Shutting down...")
 
 # Create FastAPI app
