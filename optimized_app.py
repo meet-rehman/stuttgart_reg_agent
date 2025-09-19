@@ -122,7 +122,7 @@ async def lifespan(app: FastAPI):
         
         print("Step 4: Calling RAG system initialize...")
         try:
-            await rag_system.initialize()
+            # RAG system initializes itself in __init__ - no separate initialize() call needed
             print("✅ RAG system initialize() completed")
         except Exception as e:
             print(f"❌ RAG system initialize() failed: {e}")
