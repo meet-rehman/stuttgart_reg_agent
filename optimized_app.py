@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from dotenv import load_dotenv
+from coordinator_agent import CoordinatorAgent
 
 # Add current directory to Python path for local imports
 current_dir = Path(__file__).parent.absolute()
@@ -232,52 +233,58 @@ async def search_buildings(request: BuildingSearchRequest):
 # Chat endpoint
 # Replace the chat endpoint in your optimized_app.py with this:
 
+
+# Global instance
+coordinator = CoordinatorAgent(rag_system)
+
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
-    """Chat with the building registration agent"""
     try:
         if not groq_client:
             raise HTTPException(status_code=503, detail="Groq client not initialized")
         if not rag_system:
             raise HTTPException(status_code=503, detail="RAG system not initialized")
-        
-        # Get relevant context from RAG (remove await)
-        context_results = rag_system.search(request.message, top_k=5)
-        context = "\n".join([result.content[:500] for result in context_results])
-        
-        # Create system prompt with context
-        system_context = f"""You are a helpful assistant for Stuttgart building registration process.
 
-Use this context to answer questions:
+        # Use coordinator to pick task + context
+        routing = coordinator.route(request.message)
+        context = routing["context"]
+
+        system_context = f"""
+You are an assistant specialized in Stuttgart building regulations.
+Agent handling this query: {routing['agent']}
+Task: {routing['task']}
+
+Answer ONLY using the context below.
+If the answer is not in the context, reply: "I cannot find this information in the available documents."
+
+Context:
 {context}
+"""
 
-Be helpful, accurate, and concise. If you don't know something based on the context, say so."""
-        
-        # Create the full prompt
         full_prompt = f"{system_context}\n\nUser: {request.message}\nAssistant:"
-        
-        # Get response from Groq using the correct method
+
         groq_response = await groq_client.complete_async(
             prompt=full_prompt,
             max_tokens=512,
             temperature=0.1
         )
-        
-        # Extract the text from Groq's response format
+
         if 'choices' in groq_response and len(groq_response['choices']) > 0:
             response_text = groq_response['choices'][0]['message']['content']
         else:
             response_text = "I'm sorry, I couldn't generate a response at this time."
-        
+
         return ChatResponse(
             message=response_text,
             timestamp=datetime.now().isoformat(),
-            context_used=len(context_results)
+            context_used=len(context.split("---")),
+            conversation_id=request.conversation_id
         )
-        
+
     except Exception as e:
         print(f"Chat error: {e}")
         raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
+
 
 # Static files and frontend
 try:

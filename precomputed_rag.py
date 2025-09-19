@@ -100,7 +100,7 @@ class PrecomputedRAGSystem:
         if len(self.documents) == 0:
             logger.warning("No documents available for search")
             return [BuildingResult(
-                content="I don't have any specific building registration documents loaded right now. However, I can help you with general information about building regulations in Stuttgart.",
+                content="No match found in your Stuttgart regulations dataset.",
                 score=0.5,
                 metadata={"type": "fallback"}
             )]
