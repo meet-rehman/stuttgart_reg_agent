@@ -133,15 +133,15 @@ async def lifespan(app: FastAPI):
             raise
         
         print("Step 5: Checking RAG system readiness...")
-        try:
-            is_ready = rag_system.is_ready()
-            print(f"RAG system is_ready(): {is_ready}")
-            if not is_ready:
-                print("⚠️  RAG system reports not ready after initialization")
-            else:
-                print("✅ RAG system ready!")
-        except Exception as e:
-            print(f"❌ Error checking RAG readiness: {e}")
+                try:
+                    is_ready = rag_system.is_ready  # Remove () - it's a property, not a method
+                    print(f"RAG system is_ready: {is_ready}")
+                    if not is_ready:
+                        print("⚠️ RAG system reports not ready after initialization")
+                    else:
+                        print("✅ RAG system ready!")
+                except Exception as e:
+                    print(f"❌ Error checking RAG readiness: {e}")
         
         print("="*50)
         print("✅ APP STARTED SUCCESSFULLY!")
@@ -189,7 +189,7 @@ async def health_check():
     """Health check endpoint"""
     try:
         groq_ready = groq_client is not None and GROQ_API_KEY is not None
-        rag_ready = rag_system is not None and rag_system.is_ready()
+        rag_ready = rag_system is not None and rag_system.is_ready  # Remove () - it's a property
         
         status = "healthy" if (groq_ready and rag_ready) else "degraded"
         
@@ -215,7 +215,7 @@ async def search_buildings(request: BuildingSearchRequest):
         if not rag_system:
             raise HTTPException(status_code=503, detail="RAG system not initialized")
         
-        results = await rag_system.search(
+        results = rag_system.search(  # Remove await - it's not async
             query=request.query,
             top_k=request.top_k
         )
@@ -241,8 +241,8 @@ async def chat_endpoint(request: ChatRequest):
         if not rag_system:
             raise HTTPException(status_code=503, detail="RAG system not initialized")
         
-        # Get relevant context from RAG
-        context_results = await rag_system.search(request.message, top_k=5)
+        # Get relevant context from RAG (remove await)
+        context_results = rag_system.search(request.message, top_k=5)
         context = "\n".join([result.content[:500] for result in context_results])
         
         # Create system prompt with context
@@ -253,7 +253,7 @@ Use this context to answer questions:
 
 Be helpful, accurate, and concise. If you don't know something based on the context, say so."""
         
-        # Create the full prompt (your GroqClient expects a single prompt, not messages array)
+        # Create the full prompt
         full_prompt = f"{system_context}\n\nUser: {request.message}\nAssistant:"
         
         # Get response from Groq using the correct method
