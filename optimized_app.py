@@ -133,15 +133,15 @@ async def lifespan(app: FastAPI):
             raise
         
         print("Step 5: Checking RAG system readiness...")
-                try:
-                    is_ready = rag_system.is_ready  # Remove () - it's a property, not a method
-                    print(f"RAG system is_ready: {is_ready}")
-                    if not is_ready:
-                        print("⚠️ RAG system reports not ready after initialization")
-                    else:
-                        print("✅ RAG system ready!")
-                except Exception as e:
-                    print(f"❌ Error checking RAG readiness: {e}")
+        try:
+            is_ready = rag_system.is_ready  # Remove () - it's a property, not a method
+            print(f"RAG system is_ready: {is_ready}")
+            if not is_ready:
+                print("⚠️ RAG system reports not ready after initialization")
+            else:
+                print("✅ RAG system ready!")
+        except Exception as e:
+            print(f"❌ Error checking RAG readiness: {e}")
         
         print("="*50)
         print("✅ APP STARTED SUCCESSFULLY!")
