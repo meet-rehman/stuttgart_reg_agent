@@ -87,34 +87,84 @@ rag_system: Optional[PrecomputedRAGSystem] = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Application lifespan manager with detailed error debugging"""
     global groq_client, rag_system
     
+    print("="*50)
+    print("STARTING LIFESPAN INITIALIZATION")
+    print("="*50)
+    
     try:
-        print("Starting Stuttgart Building Agent...")
+        print("Step 1: Starting Stuttgart Building Agent...")
         
         # Initialize GroqClient
+        print("Step 2: Initializing Groq client...")
         if GROQ_API_KEY:
-            groq_client = GroqClient(api_key=GROQ_API_KEY, api_url=GROQ_API_URL)
-            print("Groq client initialized")
+            groq_client = GroqClient(
+                api_key=GROQ_API_KEY,
+                api_url=GROQ_API_URL
+            )
+            print("✅ Groq client initialized successfully")
         else:
-            print("WARNING: Groq client not initialized - missing API key")
+            print("⚠️  WARNING: Groq client not initialized - missing API key")
         
-        # Initialize RAG system with more error handling
-        print("Initializing RAG system...")
-        rag_system = PrecomputedRAGSystem()
-        await rag_system.initialize()
-        print("RAG system ready!")  # This message is missing from your logs
+        # Initialize RAG system with extensive debugging
+        print("Step 3: Initializing RAG system...")
+        print(f"Current working directory: {os.getcwd()}")
+        print(f"Embeddings directory exists: {(Path(__file__).parent / 'embeddings').exists()}")
         
-        print("App started successfully!")
+        try:
+            rag_system = PrecomputedRAGSystem()
+            print("✅ RAG system object created")
+        except Exception as e:
+            print(f"❌ Failed to create RAG system object: {e}")
+            raise
+        
+        print("Step 4: Calling RAG system initialize...")
+        try:
+            await rag_system.initialize()
+            print("✅ RAG system initialize() completed")
+        except Exception as e:
+            print(f"❌ RAG system initialize() failed: {e}")
+            print(f"Exception type: {type(e).__name__}")
+            import traceback
+            print("Full traceback:")
+            traceback.print_exc()
+            raise
+        
+        print("Step 5: Checking RAG system readiness...")
+        try:
+            is_ready = rag_system.is_ready()
+            print(f"RAG system is_ready(): {is_ready}")
+            if not is_ready:
+                print("⚠️  RAG system reports not ready after initialization")
+            else:
+                print("✅ RAG system ready!")
+        except Exception as e:
+            print(f"❌ Error checking RAG readiness: {e}")
+        
+        print("="*50)
+        print("✅ APP STARTED SUCCESSFULLY!")
+        print("="*50)
         
     except Exception as e:
-        print(f"STARTUP ERROR: {e}")
+        print("="*50)
+        print(f"❌ STARTUP ERROR: {e}")
+        print(f"Error type: {type(e).__name__}")
+        print("="*50)
         import traceback
         traceback.print_exc()
-        # Don't raise - let app start anyway for debugging
+        
+        # Set systems to None so health checks can detect the failure
+        groq_client = None
+        rag_system = None
+        
+        # Don't raise - let the app start so we can see the error via health endpoint
+        print("⚠️  Continuing startup with disabled systems for debugging")
     
     yield
-    print("Shutting down...")
+    
+    print("🔄 Shutting down...")
 
 # Create FastAPI app
 app = FastAPI(
