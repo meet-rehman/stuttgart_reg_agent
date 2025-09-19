@@ -195,6 +195,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.get("/debug/rag-status")
+async def debug_rag_status():
+    """Debug endpoint to check RAG system status"""
+    if not rag_system:
+        return {"error": "RAG system not initialized"}
+    
+    return {
+        "is_ready": rag_system.is_ready,
+        "embeddings_dir": str(rag_system.embeddings_dir),
+        "documents_count": len(rag_system.documents),
+        "embeddings_shape": rag_system.embeddings.shape if rag_system.embeddings is not None else None,
+        "embeddings_dir_exists": rag_system.embeddings_dir.exists(),
+        "files_in_embeddings_dir": [f.name for f in rag_system.embeddings_dir.glob("*")] if rag_system.embeddings_dir.exists() else []
+    }
+
+
+    
 # Health check endpoint
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
