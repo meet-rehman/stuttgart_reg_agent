@@ -85,11 +85,12 @@ else:
 # Global variables
 groq_client: Optional[GroqClient] = None
 rag_system: Optional[PrecomputedRAGSystem] = None
+coordinator: Optional[CoordinatorAgent] = None  # Add coordinator here
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan manager with detailed error debugging"""
-    global groq_client, rag_system
+    global groq_client, rag_system, coordinator  # Add coordinator to global
     
     print("="*50)
     print("STARTING LIFESPAN INITIALIZATION")
@@ -107,7 +108,7 @@ async def lifespan(app: FastAPI):
             )
             print("✅ Groq client initialized successfully")
         else:
-            print("⚠️  WARNING: Groq client not initialized - missing API key")
+            print("⚠️ WARNING: Groq client not initialized - missing API key")
         
         # Initialize RAG system with extensive debugging
         print("Step 3: Initializing RAG system...")
@@ -144,6 +145,15 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             print(f"❌ Error checking RAG readiness: {e}")
         
+        # NEW: Initialize coordinator AFTER RAG system is ready
+        print("Step 6: Initializing coordinator...")
+        try:
+            coordinator = CoordinatorAgent(rag_system)
+            print("✅ Coordinator initialized successfully")
+        except Exception as e:
+            print(f"❌ Failed to initialize coordinator: {e}")
+            raise
+        
         print("="*50)
         print("✅ APP STARTED SUCCESSFULLY!")
         print("="*50)
@@ -159,13 +169,14 @@ async def lifespan(app: FastAPI):
         # Set systems to None so health checks can detect the failure
         groq_client = None
         rag_system = None
+        coordinator = None  # Add this
         
         # Don't raise - let the app start so we can see the error via health endpoint
-        print("⚠️  Continuing startup with disabled systems for debugging")
+        print("⚠️ Continuing startup with disabled systems for debugging")
     
     yield
     
-    print("🔄 Shutting down...")
+    print("🔥 Shutting down...")
 
 # Create FastAPI app
 app = FastAPI(
@@ -234,8 +245,6 @@ async def search_buildings(request: BuildingSearchRequest):
 # Replace the chat endpoint in your optimized_app.py with this:
 
 
-# Global instance
-coordinator = CoordinatorAgent(rag_system)
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
@@ -244,6 +253,8 @@ async def chat_endpoint(request: ChatRequest):
             raise HTTPException(status_code=503, detail="Groq client not initialized")
         if not rag_system:
             raise HTTPException(status_code=503, detail="RAG system not initialized")
+        if not coordinator:
+            raise HTTPException(status_code=503, detail="Coordinator not initialized")
 
         # Use coordinator to pick task + context
         routing = coordinator.route(request.message)
@@ -277,8 +288,8 @@ Context:
         return ChatResponse(
             message=response_text,
             timestamp=datetime.now().isoformat(),
-            context_used=len(context.split("---")),
-            conversation_id=request.conversation_id
+            context_used=len(context.split("---")) if context else 0,
+            conversation_id=getattr(request, 'conversation_id', None)  # Handle missing attribute
         )
 
     except Exception as e:
