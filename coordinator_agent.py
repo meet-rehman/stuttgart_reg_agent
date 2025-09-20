@@ -2,7 +2,7 @@
 
 import yaml
 from pathlib import Path
-from precomputed_rag import PrecomputedRAGSystem
+from precomputed_rag import EnhancedPrecomputedRAGSystem as PrecomputedRAGSystem
 
 class CoordinatorAgent:
     def __init__(self, rag_system: PrecomputedRAGSystem, tasks_path="tasks.yaml", agents_path="agents.yaml"):
