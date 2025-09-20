@@ -28,7 +28,7 @@ try:
         HealthResponse
     )
     from tools.groq_client import GroqClient
-    from precomputed_rag import PrecomputedRAGSystem
+    from precomputed_rag import EnhancedPrecomputedRAGSystem as PrecomputedRAGSystem
 except ImportError as e:
     print(f"Import error: {e}")
     print(f"Current directory: {current_dir}")
