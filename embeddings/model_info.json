@@ -1,6 +1,8 @@
 {
   "model_name": "all-MiniLM-L6-v2",
   "embedding_dim": 384,
-  "document_count": 406,
-  "embedding_count": 406
+  "document_count": 6475,
+  "embedding_count": 6475,
+  "processing_date": "2024-09-19",
+  "enhancement_level": "detailed_citations_and_metadata"
 }

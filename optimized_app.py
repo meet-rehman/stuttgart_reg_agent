@@ -260,12 +260,12 @@ async def search_buildings(request: BuildingSearchRequest):
         raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
 
 # Chat endpoint
-# Replace the chat endpoint in your optimized_app.py with this:
 
-
+# Replace your chat endpoint in optimized_app.py with this enhanced version:
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(request: ChatRequest):
+    """Enhanced PropTech chat with detailed citations"""
     try:
         if not groq_client:
             raise HTTPException(status_code=503, detail="Groq client not initialized")
@@ -274,27 +274,52 @@ async def chat_endpoint(request: ChatRequest):
         if not coordinator:
             raise HTTPException(status_code=503, detail="Coordinator not initialized")
 
-        # Use coordinator to pick task + context
+        # Detect district mentions for targeted search
+        stuttgart_districts = ['Zuffenhausen', 'Feuerbach', 'Weilimdorf', 'Bad Cannstatt', 'Stammheim']
+        mentioned_district = None
+        for district in stuttgart_districts:
+            if district.lower() in request.message.lower():
+                mentioned_district = district
+                break
+
+        # Use coordinator for intelligent routing
         routing = coordinator.route(request.message)
-        context = routing["context"]
+        
+        # Get enhanced context with citations
+        if mentioned_district:
+            context_results = rag_system.search_by_district(request.message, mentioned_district, top_k=4)
+            context = f"DISTRICT-SPECIFIC RESULTS FOR {mentioned_district.upper()}:\n\n"
+            context += rag_system.get_context_for_query(request.message, max_tokens=2500, include_citations=True)
+        else:
+            context = rag_system.get_context_for_query(request.message, max_tokens=2500, include_citations=True)
 
-        system_context = f"""
-You are an assistant specialized in Stuttgart building regulations.
-Agent handling this query: {routing['agent']}
-Task: {routing['task']}
+        # Enhanced system prompt for PropTech focus
+        system_context = f"""You are a specialized Stuttgart Building Regulations Assistant for PropTech applications.
 
-Answer ONLY using the context below.
-If the answer is not in the context, reply: "I cannot find this information in the available documents."
+CRITICAL INSTRUCTIONS:
+1. Answer ONLY using the provided Stuttgart documents below
+2. ALWAYS include specific citations (document name, page, section)
+3. Include form numbers, official IDs, and legal references when available
+4. Highlight district-specific rules when relevant
+5. If the answer isn't in the documents, state: "This information is not available in the current Stuttgart regulations database."
 
-Context:
+Agent Context: {routing['agent']} | Task: {routing['task']}
+
+STUTTGART BUILDING REGULATIONS DATABASE:
 {context}
+
+FORMAT YOUR RESPONSE AS:
+1. Direct answer with specific citations
+2. Relevant forms/documents needed
+3. District-specific considerations (if applicable)
+4. Legal references and section numbers
 """
 
-        full_prompt = f"{system_context}\n\nUser: {request.message}\nAssistant:"
+        full_prompt = f"{system_context}\n\nUser Question: {request.message}\n\nDetailed Response:"
 
         groq_response = await groq_client.complete_async(
             prompt=full_prompt,
-            max_tokens=512,
+            max_tokens=800,  # Increased for detailed responses
             temperature=0.1
         )
 
@@ -303,16 +328,57 @@ Context:
         else:
             response_text = "I'm sorry, I couldn't generate a response at this time."
 
+        # Count context sources for metadata
+        context_sources = len(context.split("[Source")) - 1 if "[Source" in context else 0
+
         return ChatResponse(
             message=response_text,
             timestamp=datetime.now().isoformat(),
-            context_used=len(context.split("---")) if context else 0,
-            conversation_id=getattr(request, 'conversation_id', None)  # Handle missing attribute
+            context_used=context_sources,
+            conversation_id=getattr(request, 'conversation_id', None)
         )
 
     except Exception as e:
-        print(f"Chat error: {e}")
+        print(f"Enhanced chat error: {e}")
         raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
+
+# Add new endpoints for PropTech functionality
+@app.get("/forms/{process_type}")
+async def get_forms_for_process(process_type: str):
+    """Get relevant forms for a building process"""
+    if not rag_system:
+        raise HTTPException(status_code=503, detail="RAG system not initialized")
+    
+    forms = rag_system.get_forms_for_process(process_type)
+    
+    return {
+        "process_type": process_type,
+        "relevant_forms": forms,
+        "total_found": len(forms)
+    }
+
+@app.get("/districts/{district_name}/regulations")
+async def get_district_regulations(district_name: str):
+    """Get district-specific regulations"""
+    if not rag_system:
+        raise HTTPException(status_code=503, detail="RAG system not initialized")
+    
+    # Search for district-specific content
+    results = rag_system.search_by_district("building regulations requirements", district_name, top_k=5)
+    
+    return {
+        "district": district_name,
+        "regulations": [
+            {
+                "content_preview": result.content[:300] + "...",
+                "citation": result.get_detailed_citation(),
+                "score": result.score,
+                "document_type": result.metadata.get("document_type", "Unknown")
+            }
+            for result in results
+        ],
+        "total_found": len(results)
+    }
 
 
 # Static files and frontend
