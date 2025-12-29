@@ -1,0 +1,41 @@
+# ============================================================================
+# RAILWAY-OPTIMIZED REQUIREMENTS
+# Minimal dependencies for fast deployment
+# ============================================================================
+
+# Core API
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# OpenAI (for embeddings + agents)
+openai==1.3.0
+
+# CrewAI (for multi-agent system)
+crewai==0.11.0
+langchain==0.0.340
+langchain-openai==0.0.2
+
+# Basic utilities
+python-dotenv==1.0.0
+pydantic==2.5.0
+numpy==1.24.3
+
+# Optional: Redis for caching (if using Railway Redis add-on)
+# redis==5.0.1
+
+# ============================================================================
+# REMOVED FROM RAILWAY DEPLOYMENT (saves memory + startup time)
+# ============================================================================
+# ❌ sentence-transformers  # 200MB model + dependencies
+# ❌ torch                   # 800MB+
+# ❌ transformers            # Heavy dependencies
+# ❌ pypdf                   # Not needed (documents pre-processed)
+
+# ============================================================================
+# SIZE COMPARISON
+# ============================================================================
+# Old requirements: ~1.2GB installed
+# New requirements: ~300MB installed
+# Savings: ~900MB (75% reduction!)
+# ============================================================================

@@ -1,0 +1,76 @@
+{
+  "fnp-61-anlage1-planzeichnung_page_1.png": {
+    "status": "failed",
+    "data": {
+      "error": "Failed to parse legend",
+      "raw_response": "I'm unable to extract information from the image provided. Please provide a detailed description or list of the symbols, colors, and abbreviations from the legend page, and I can help format it into JSON."
+    }
+  },
+  "fnp-61-anlage1-planzeichnung_page_2.png": {
+    "status": "success",
+    "data": {
+      "document_type": "Flächennutzungsplan",
+      "document_name": "Änderung Nr. 61 Areal Bürgerhospital Stuttgart-Nord",
+      "zoning_types": {
+        "E": "Einzelhandel (retail)",
+        "M": "Mischgebiet (mixed use area)",
+        "W": "Wohngebiet (residential area)",
+        "MV": "Mischgebiet mit vorwiegender Wohnnutzung (mixed use with predominant residential use)"
+      },
+      "color_meanings": {
+        "red": "Wohnbaufläche (residential area)",
+        "green": "Grünfläche Parkanlage, Landschaftspark (green space, landscape park)",
+        "pink": "Gemeinbedarfsfläche/Größere Krankenhäuser (public facilities/larger hospitals)"
+      },
+      "symbols": {
+        "solid_line": "Plot boundary (Grundstücksgrenze)",
+        "dashed_line": "Planning boundary (Plangrenze)",
+        "cross": "Hospital symbol (Krankenhaussymbol)"
+      },
+      "abbreviations": {
+        "ha": "Hektar (hectare)"
+      },
+      "special_designations": {
+        "Gemeinbedarfsfläche": "Public facilities area",
+        "Größere Krankenhäuser": "Larger hospitals"
+      }
+    }
+  },
+  "fnp-61-anlage1-planzeichnung_page_3.png": {
+    "status": "success",
+    "data": {
+      "document_type": "Flächennutzungsplan",
+      "document_name": "Flächennutzungsplan Stuttgart Änderung Nr. 61 Areal Bürgerhospital, Stuttgart-Nord",
+      "zoning_types": {
+        "WA": "Wohngebiet (residential area)",
+        "MI": "Mischgebiet (mixed use area)",
+        "GE": "Gewerbegebiet (commercial area)",
+        "SO": "Sondergebiet (special area)"
+      },
+      "color_meanings": {
+        "red": "Wohnbaufläche (residential area)",
+        "yellow": "Gewerbliche Baufläche (commercial area)",
+        "green": "Grünfläche (green space)",
+        "blue": "Wasserfläche (water area)"
+      },
+      "symbols": {
+        "solid_line": "Stadtteilgrenzen (district boundaries)",
+        "dashed_line": "Stadtgrenzen (city boundaries)",
+        "circle": "Verkehr (traffic)",
+        "triangle": "Ver- und Entsorgungsflächen (supply and disposal areas)"
+      },
+      "abbreviations": {
+        "GRZ": "Grundflächenzahl (site coverage ratio)",
+        "GFZ": "Geschossflächenzahl (floor area ratio)",
+        "HBA": "Höhe baulicher Anlagen (building height)",
+        "B-Plan": "Bebauungsplan (development plan)"
+      },
+      "special_designations": {
+        "Landschaftsschutzgebiet": "Landscape protection area",
+        "Naturschutzgebiet": "Nature reserve",
+        "Wasserschutzgebiet": "Water protection area",
+        "Flächen, die nicht zur Genehmigung vorgelegt werden": "Areas not submitted for approval"
+      }
+    }
+  }
+}

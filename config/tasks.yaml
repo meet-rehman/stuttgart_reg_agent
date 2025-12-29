@@ -1,0 +1,29 @@
+analyze_zoning:
+  description: "Analyze zoning rules for the plot."
+  agent: "zoning_agent"
+  parameters:
+    location: "string"
+    size_m2: "float"
+    building_type: "string"
+    floors: "int"
+    height_m: "float"
+
+check_building_code:
+  description: "Check building compliance according to LBO, BauGB, and Stuttgart municipal regulations."
+  agent: "building_code_agent"
+  parameters:
+    location: "string"
+    size_m2: "float"
+    building_type: "string"
+    floors: "int"
+    height_m: "float"
+
+assess_accessibility:
+  description: "Assess accessibility compliance (barrierefreies Bauen)."
+  agent: "accessibility_agent"
+  parameters:
+    location: "string"
+    size_m2: "float"
+    building_type: "string"
+    floors: "int"
+    height_m: "float"

@@ -1,0 +1,8 @@
+{
+  "model_name": "all-MiniLM-L6-v2",
+  "embedding_dim": 384,
+  "document_count": 12106,
+  "embedding_count": 12106,
+  "created_at": "2025-10-20T02:07:23.858338",
+  "last_update": "Added Stgt 272 Bebauungsplan with correct naming"
+}

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stuttgart Building Regulations AI - Nord District Analysis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            opacity: 0.95;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            opacity: 0.85;
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+
+        .status {
+            padding: 15px 20px;
+            margin: 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status.healthy {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .status-icon {
+            font-size: 1.5rem;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .system-info {
+            background: linear-gradient(135deg, #e8f4f8, #f0e8f8);
+            border-left: 4px solid #3498db;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .system-info h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .agent-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-top: 4px solid #3498db;
+        }
+
+        .agent-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .agent-card .role {
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .agent-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .agent-card li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .agent-card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .info-box.blue {
+            background: #cfe2ff;
+            border-color: #0d6efd;
+            color: #084298;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1.05rem;
+        }
+
+        .capabilities {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .capabilities h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .capabilities ul {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            list-style: none;
+        }
+
+        .capabilities li {
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            border-left: 3px solid #27ae60;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3);
+        }
+
+        .chat-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .chat-input input {
+            flex: 1;
+        }
+
+        .response {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 2px solid #e1e8ed;
+            white-space: pre-wrap;
+            font-family: inherit;
+            line-height: 1.8;
+            display: none;
+        }
+
+        .response.show {
+            display: block;
+        }
+
+        .response.loading {
+            background: #e8f4f8;
+            color: #0066cc;
+            font-style: italic;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .response-header {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e1e8ed;
+        }
+
+        .processing-info {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e1e8ed;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-grid, .agents-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .chat-input {
+                flex-direction: column;
+            }
+
+            .capabilities ul {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Stuttgart Building Regulations AI</h1>
+            <p>Multi-Agent System with Vision Capabilities</p>
+            <p class="subtitle">Specialized for Stuttgart Nord District Analysis</p>
+        </div>
+
+        <div id="status" class="status">
+            <span class="status-icon">🔄</span>
+            <span>Checking system status...</span>
+        </div>
+
+        <div class="main-content">
+            <!-- System Information -->
+            <div class="system-info">
+                <h3>🤖 How This AI System Works</h3>
+                <p style="margin-bottom: 15px;">
+                    This system uses <strong>two specialized AI agents</strong> working together with <strong>vision capabilities</strong> 
+                    to analyze Stuttgart building regulations, particularly for the Nord district areas.
+                </p>
+
+                <div class="agents-grid">
+                    <div class="agent-card">
+                        <h4>🔍 Document & Visual Plan Specialist</h4>
+                        <div class="role">Research & Analysis Agent</div>
+                        <ul>
+                            <li>Searches 12,000+ Stuttgart regulation documents</li>
+                            <li>Analyzes visual Bebauungspläne (land-use plans) using GPT-4 Vision</li>
+                            <li>Finds exact GRZ, GFZ, HBA values from plans</li>
+                            <li>Identifies plot locations and zoning (WA, MI, GE)</li>
+                            <li>Extracts height limits and setback requirements</li>
+                            <li>Processing time: ~30-50 seconds</li>
+                        </ul>
+                    </div>
+
+                    <div class="agent-card">
+                        <h4>🏗️ Architecture & Development Consultant</h4>
+                        <div class="role">Report Generation Agent</div>
+                        <ul>
+                            <li>Synthesizes research into professional reports</li>
+                            <li>Calculates maximum buildable areas</li>
+                            <li>Provides development scenarios and recommendations</li>
+                            <li>Identifies opportunities and constraints</li>
+                            <li>Creates actionable next steps</li>
+                            <li>Processing time: ~20-30 seconds</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="capabilities">
+                    <h4>✨ System Capabilities</h4>
+                    <ul>
+                        <li>✓ Plot-specific regulation analysis</li>
+                        <li>✓ Visual plan interpretation</li>
+                        <li>✓ GRZ/GFZ/HBA value extraction</li>
+                        <li>✓ Zoning classification</li>
+                        <li>✓ Building height calculation</li>
+                        <li>✓ Professional consultation reports</li>
+                        <li>✓ Development potential assessment</li>
+                        <li>✓ Regulatory hierarchy analysis</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Focus Areas -->
+            <div class="info-box blue">
+                <strong>📍 Current Focus Areas (Stuttgart Nord):</strong>
+                <p>
+                    • <strong>Bürgerhospital/Türlenstraße</strong> - Stadtbezirk Stuttgart Nord<br>
+                    • <strong>Friedhofstraße/Nordbahnhofstraße</strong> - Stadtbezirk Stuttgart Nord
+                </p>
+                <p style="margin-top: 10px; font-size: 0.9rem;">
+                    The system has detailed knowledge of Bebauungspläne for these areas including Stgt 272, Stgt 286-2, 
+                    and can analyze plot-specific requirements using vision AI.
+                </p>
+            </div>
+
+
+            <!-- Chat Section -->
+            <div class="section">
+                <h2><span class="section-icon">💬</span> Ask Questions</h2>
+                
+                <div class="info-box">
+                    <strong>📝 Example Questions You Can Ask:</strong>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>What are the building regulations for Nordbahnhofstraße area?</li>
+                        <li>What is GRZ and GFZ for residential buildings in Stuttgart Nord?</li>
+                        <li>What building heights are allowed near Friedhofstraße?</li>
+                        <li>What are the zoning requirements for mixed-use buildings in Stuttgart Nord?</li>
+                        <li>What is the maximum buildable area for residential projects?</li>
+                    </ul>
+                </div>
+                
+                <div class="chat-container">
+                    <div class="chat-input">
+                        <input 
+                            type="text" 
+                            id="chatInput" 
+                            placeholder="Ask about building regulations, plot requirements, height restrictions..." 
+                        />
+                        <button class="btn" id="sendBtn" onclick="sendChat()">Send</button>
+                        <button class="btn secondary" onclick="clearChat()">Clear</button>
+                    </div>
+                    <div id="chatResponse" class="response"></div>
+                </div>
+            </div>
+
+            <!-- Processing Info -->
+            <div class="info-box">
+                <strong>⏱️ Expected Processing Times:</strong>
+                <p style="margin-top: 8px;">
+                    • Simple queries (GRZ, GFZ definitions): ~40-50 seconds<br>
+                    • Plot-specific queries with vision: ~90-120 seconds<br>
+                    • Complex consultation reports: ~70-90 seconds
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        // Check system status
+        async function checkStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                const statusDiv = document.getElementById('status');
+                
+                if (data.status === 'healthy') {
+                    statusDiv.className = 'status healthy';
+                    statusDiv.innerHTML = `
+                        <span class="status-icon">✅</span>
+                        <span><strong>System: OPERATIONAL</strong> | 
+                        Environment: ${data.environment} | 
+                        CrewAI: Ready | 
+                        Vision: ${data.vision_enabled ? 'Enabled ✓' : 'Disabled'}</span>
+                    `;
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.innerHTML = `
+                        <span class="status-icon">⚠️</span>
+                        <span><strong>System: ${data.status.toUpperCase()}</strong> | Some components not ready</span>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('status').innerHTML = `
+                    <span class="status-icon">❌</span>
+                    <span>Error: ${error.message}</span>
+                `;
+                document.getElementById('status').className = 'status error';
+            }
+        }
+
+        // Send chat message
+        async function sendChat() {
+            const input = document.getElementById('chatInput');
+            const responseDiv = document.getElementById('chatResponse');
+            const sendBtn = document.getElementById('sendBtn');
+            const message = input.value.trim();
+            
+            if (!message) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            // Show loading state
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
+            responseDiv.className = 'response show loading';
+            responseDiv.textContent = '🔄 Multi-agent analysis in progress...\n\nDocument Specialist is searching regulations and analyzing plans...\nArchitecture Consultant will generate your report...\n\nThis may take 60-120 seconds for comprehensive analysis.';
+            
+            const plotNumber = document.getElementById('plotNumber').value;
+            const buildingType = document.getElementById('buildingType').value;
+            const district = document.getElementById('district').value;
+            
+            try {
+                const startTime = Date.now();
+                
+                const response = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: message,
+                        building_type: buildingType,
+                        plot_number: plotNumber || null,
+                        location: 'Stuttgart',
+                        district: district || 'Nord'
+                    })
+                });
+                
+                const endTime = Date.now();
+                const processingTime = ((endTime - startTime) / 1000).toFixed(1);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    responseDiv.className = 'response show';
+                    responseDiv.innerHTML = `
+                        <div class="response-header">
+                            ✅ Analysis Complete
+                        </div>
+                        ${data.message.replace(/\n/g, '<br>')}
+                        <div class="processing-info">
+                            ⏱️ Processing time: ${processingTime}s | 
+                            👁️ Vision used: ${data.vision_used ? 'Yes' : 'No'} | 
+                            🤖 Agents: Document Specialist + Architecture Consultant
+                        </div>
+                    `;
+                } else {
+                    responseDiv.className = 'response show';
+                    responseDiv.textContent = '❌ Error: ' + data.message;
+                }
+                
+            } catch (error) {
+                responseDiv.className = 'response show';
+                responseDiv.textContent = '❌ Error: ' + error.message;
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send';
+            }
+        }
+
+        // Clear chat
+        function clearChat() {
+            document.getElementById('chatInput').value = '';
+            document.getElementById('chatResponse').className = 'response';
+            document.getElementById('chatResponse').textContent = '';
+        }
+
+        // Enter key support (Ctrl+Enter to send)
+        document.getElementById('chatInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                sendChat();
+            }
+        });
+
+        // Initialize
+        checkStatus();
+        
+        // Refresh status every 30 seconds
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+crewai
+fastapi
+uvicorn
+python-dotenv
+requests
+sentence-transformers
+torch
+PyYAML
+pydantic

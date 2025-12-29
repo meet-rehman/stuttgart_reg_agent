@@ -1,0 +1,22 @@
+{
+  "analyze_zoning": {
+    "allowed_building_type": "residential",
+    "max_floors": 5,
+    "max_height_m": 18.0,
+    "notes": "Stuttgart-Mitte zoning permits residential buildings up to 5 floors and 18 m height. The proposed 3‑floor, 10 m structure complies with these limits."
+  },
+  "check_building_code": {
+    "compliant": true,
+    "violations": []
+  },
+  "assess_accessibility": {
+    "compliant": false,
+    "recommendations": [
+      "Install an elevator or lift to provide access to all floors.",
+      "Ensure at least one entrance is wheelchair accessible with a ramp and handrail.",
+      "Widen doorways to a minimum of 90 cm for wheelchair passage.",
+      "Provide accessible bathroom facilities on each floor or at least on the ground floor.",
+      "Install tactile guidance paths and audible signals for visually impaired occupants."
+    ]
+  }
+}
